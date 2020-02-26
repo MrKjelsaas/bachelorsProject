@@ -4,19 +4,13 @@ import numpy as np
 from numpy import pi # So I only have to write pi instead of np.pi
 import time
 import matplotlib.pyplot as plt
-from matplotlib import interactive
-import mpl_toolkits.mplot3d.axes3d as p3
-import matplotlib.animation as animation
 import robotteknikk as rob
 
-interactive(True)
 
 
 
-
-
-def sensorReading():  # Dummy sensor reading from -1 to +1
-    return 2*np.random.random() - 1
+def sensorReading():  # Dummy sensor reading from 0 to 360
+    return 360*np.random.random()
 def currentDateTimeInPureNumbers():  # Returns format ddmmyyyy hhmmss
     string = time.strftime('%d/%m/%Y %H:%M:%S')
     date = string[0] + string[1]
@@ -70,15 +64,53 @@ with open(dataFileFullName, 'wb') as file:
 print("\nRecorded a total of", data.shape[0], "entries")
 
 
-testArrary = np.zeros(10)
-for i in range(10):
-    testArrary[i] = i**2
 
 
-fig = plt.figure()
-plt.plot(testArrary)
-input("Press return")
-plt.show()
+fig1 = plt.figure()
+ax = fig1.gca(projection='3d')
+ax.set_xlim3d(-1, 1)
+ax.set_ylim3d(-1, 1)
+ax.set_zlim3d(-1, 1)
+orientation = np.eye(4)
+roll = 0
+pitch = 0
+yaw = 0
+orientation[:3,:3] = rob.rpy2rotmat(roll, pitch, yaw)
+
+
+plt.ion()
+plotWidth = 35
+for i in range(35):
+    if i < plotWidth:
+        ax = fig1.gca(projection='3d')
+        ax.set_xlim3d(-1, 1)
+        ax.set_ylim3d(-1, 1)
+        ax.set_zlim3d(-1, 1)
+        roll += 0
+        pitch += pi/35
+        yaw += 0
+        orientation[:3,:3] = rob.rpy2rotmat(roll, pitch, yaw)
+
+        rob.trplot3(ax, orientation)
+        plt.draw()
+        plt.pause(0.01)
+        plt.clf()
+
+
+    else:
+        ax = fig1.gca(projection='3d')
+        ax.set_xlim3d(-1, 1)
+        ax.set_ylim3d(-1, 1)
+        ax.set_zlim3d(-1, 1)
+        roll += 0
+        pitch += 0
+        yaw += 0
+        orientation[:3,:3] = rob.rpy2rotmat(roll, pitch, yaw)
+
+        rob.trplot3(ax, orientation)
+        plt.draw()
+        plt.pause(0.01)
+        plt.clf()
 
 
 
