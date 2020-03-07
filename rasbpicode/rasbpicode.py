@@ -3,14 +3,9 @@
 import numpy as np
 from numpy import pi # So I only have to write pi instead of np.pi
 import time
-import matplotlib.pyplot as plt
-import robotteknikk as rob
+import threading
+import serial
 
-
-
-
-def sensorReading():  # Dummy sensor reading from 0 to 360
-    return 360*np.random.random()
 def currentDateTimeInPureNumbers():  # Returns format ddmmyyyy hhmmss
     string = time.strftime('%d/%m/%Y %H:%M:%S')
     date = string[0] + string[1]
@@ -23,113 +18,51 @@ def currentDateTimeInPureNumbers():  # Returns format ddmmyyyy hhmmss
     return dateStamp
 def toRadian(degrees):
     return degrees*(pi/180)
+def getSensorData():
+    b = ser.readline()         # read a byte string
+    string = b.decode()        # decode byte string into Unicode
+    string = string.rstrip()   # remove \n and \r
+    string = string.split(',') # makes a list of the values
+    roll = float(string[0])
+    pitch = float(string[1])
+    yaw = float(string[2])
+    return roll, pitch, yaw
 
-
-sensorReadingFrequency = 60
-
+ser = serial.Serial(port='COM4', baudrate=9600)
+time.sleep(2)
 
 # Prepares the file name and path for data log
-dataFilePath = "rasbpicode\\SavedData\\"
+dataFilePath = "SavedData\\"
 dataFileName = "Log for " + currentDateTimeInPureNumbers() + ".dat"
 dataFileFullName = dataFilePath + dataFileName
 print("Saving log as:", dataFileFullName, "\n")
-
-
-"""
-# Make a process for finding the baseline
-baselineMeasurements = np.empty(100)
-for n in range(100):
-    baselineMeasurements[n] = sensorReading()
-
-print(np.average(baselineMeasurements))
-print(np.std(baselineMeasurements))
-"""
 
 
 
 data = np.empty((0, 4))  # Left column is time of recording (since beginning), right column is the input value
 startTime = time.time()
 
-with open(dataFileFullName, 'wb') as file:
-    for i in range(100):
-        inputData = np.array([time.time()-startTime, sensorReading(), sensorReading(), sensorReading()])
-        data = np.r_[data, [inputData]]
+print("Starting data collection...")
+for i in range(1000):
+    x, y, z = getSensorData()
+    inputData = np.array([time.time()-startTime, x, y, z])
+    data = np.r_[data, [inputData]]
+    if i % 100 == 0:
+        if i != 0:
+            print("Recorded " + str(i) + " entries so far")
 
-        np.savetxt(file, inputData)
-        file.flush()
+np.savetxt(dataFileFullName, data)
 
-        # time.sleep(1/sensorReadingFrequency)
-
-# print(data)
+print(data)
 print("\nRecorded a total of", data.shape[0], "entries")
 
 
 
 
-fig1 = plt.figure()
-ax = fig1.gca(projection='3d')
-ax.set_xlim3d(-1, 1)
-ax.set_ylim3d(-1, 1)
-ax.set_zlim3d(-1, 1)
-orientation = np.eye(4)
-roll = 0
-pitch = 0
-yaw = 0
-orientation[:3,:3] = rob.rpy2rotmat(roll, pitch, yaw)
-
-
-plt.ion()
-plotWidth = 35
-for i in range(35):
-    if i < plotWidth:
-        ax = fig1.gca(projection='3d')
-        ax.set_xlim3d(-1, 1)
-        ax.set_ylim3d(-1, 1)
-        ax.set_zlim3d(-1, 1)
-        roll += 0
-        pitch += pi/35
-        yaw += 0
-        orientation[:3,:3] = rob.rpy2rotmat(roll, pitch, yaw)
-
-        rob.trplot3(ax, orientation)
-        plt.draw()
-        plt.pause(0.01)
-        plt.clf()
-
-
-    else:
-        ax = fig1.gca(projection='3d')
-        ax.set_xlim3d(-1, 1)
-        ax.set_ylim3d(-1, 1)
-        ax.set_zlim3d(-1, 1)
-        roll += 0
-        pitch += 0
-        yaw += 0
-        orientation[:3,:3] = rob.rpy2rotmat(roll, pitch, yaw)
-
-        rob.trplot3(ax, orientation)
-        plt.draw()
-        plt.pause(0.01)
-        plt.clf()
 
 
 
-
-# At the beginning of the program
-    # Establish connection to arduino and prepare to read signals
-    # Create .dat file to save data to
-        # Get a proper name and date
-    # Find baseline for masurements to determine initial position (standing still)
-
-
-
-# The main loop
-    # Read signals
-    # Save signals
-    # Check for break-trigger (button?)
-
-
-
-# The closing of the program
-    # Save all data
-    # Close .dat file
+# Start program
+# Give patient a few seconds to start walking
+# Record data for a certain time (30 seconds?)
+# Save data
