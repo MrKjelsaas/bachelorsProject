@@ -108,11 +108,11 @@ void loop(void)
   */
 
   /* The processing sketch expects data as yaw, pitch, roll */
-  Serial.print(event.orientation.x, 4);
+  Serial.print(event.orientation.z, 4);
   Serial.print(",");
   Serial.print(event.orientation.y, 4);
   Serial.print(",");
-  Serial.print(event.orientation.z, 4);
+  Serial.print(event.orientation.x, 4);
 
   /*calibration data for each sensor. If the value is 0 = uncalibrated, if value is 3 = calibrated
   The calibration data will not be printed in the raspicode file. You have to first calibrate with arduino in serial*/
