@@ -107,7 +107,7 @@ void loop(void)
          +----------+
   */
 
-  /* The processing sketch expects data as roll, pitch, heading */
+  /* The processing sketch expects data as yaw, pitch, roll */
   Serial.print(event.orientation.x, 4);
   Serial.print(",");
   Serial.print(event.orientation.y, 4);
