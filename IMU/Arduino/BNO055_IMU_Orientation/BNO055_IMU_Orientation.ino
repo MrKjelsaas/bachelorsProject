@@ -115,7 +115,7 @@ void loop(void)
   Serial.print(event.orientation.z, 4);
 
   /*calibration data for each sensor. If the value is 0 = uncalibrated, if value is 3 = calibrated
-  The calibration data will not be printed in the raspicode file. You have to first calibrate with arduino serial*/
+  The calibration data will not be printed in the raspicode file. You have to first calibrate with arduino in serial*/
   uint8_t sys, gyro, accel, mag = 0;
   bno.getCalibration(&sys, &gyro, &accel, &mag);
   Serial.print(",");
