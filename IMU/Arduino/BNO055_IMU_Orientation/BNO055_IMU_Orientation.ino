@@ -107,26 +107,15 @@ void loop(void)
          +----------+
   */
 
-  /* calibration data for each sensor.
-    uint8_t sys, gyro, accel, mag = 0;
-    bno.getCalibration(&sys, &gyro, &accel, &mag);
-    Serial.print(sys, DEC);
-    Serial.print(",");
-    Serial.print(gyro, DEC);
-    Serial.print(",");
-    Serial.print(accel, DEC);
-    Serial.print(",");
-    Serial.print(mag, DEC);
-    Serial.print(",");
-
-    /* The processing sketch expects data as roll, pitch, heading */
+  /* The processing sketch expects data as roll, pitch, heading */
   Serial.print(event.orientation.x, 4);
   Serial.print(",");
   Serial.print(event.orientation.y, 4);
   Serial.print(",");
   Serial.print(event.orientation.z, 4);
 
-  /*calibration data for each sensor.*/
+  /*calibration data for each sensor. If the value is 0 = uncalibrated, if value is 3 = calibrated
+  The calibration data will not be printed in the raspicode file. You have to first calibrate with arduino serial*/
   uint8_t sys, gyro, accel, mag = 0;
   bno.getCalibration(&sys, &gyro, &accel, &mag);
   Serial.print(",");
