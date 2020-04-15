@@ -96,21 +96,10 @@ void loop(void)
   sensors_event_t event;
   bno.getEvent(&event);
 
-  /* Board layout:
-         +----------+
-         |         *| RST   PITCH  ROLL  YAW
-     ADR |*        *| SCL
-     INT |*        *| SDA     ^            /->
-     PS1 |*        *| GND     |            |
-     PS0 |*        *| 3VO     Y    Z-->    \-X
-         |         *| VIN
-         +----------+
-  */
-
   /* The processing sketch expects data as roll, pitch, yaw */
-  Serial.print(event.orientation.z, 4);
-  Serial.print(",");
   Serial.print(event.orientation.y, 4);
+  Serial.print(",");
+  Serial.print(event.orientation.z, 4);
   Serial.print(",");
   Serial.print(event.orientation.x, 4);
 
