@@ -28,33 +28,36 @@ def getSensorData():
     yaw = float(string[2])
     return roll, pitch, yaw
 
-ser = serial.Serial(port='COM4', baudrate=9600)
+ser = serial.Serial(port='COM3', baudrate=9600)
 time.sleep(2)
+for times in range(10):
+    print("Starting recording", times+1)
+    time.sleep(1)
 
-# Prepares the file name and path for data log
-dataFilePath = "SavedData\\"
-dataFileName = "Log for " + currentDateTimeInPureNumbers() + ".dat"
-dataFileFullName = dataFilePath + dataFileName
-print("Saving log as:", dataFileFullName, "\n")
+    # Prepares the file name and path for data log
+    dataFilePath = "SavedData\\"
+    dataFileName = "Log for " + currentDateTimeInPureNumbers() + ".dat"
+    dataFileFullName = dataFilePath + dataFileName
+    print("Saving log as:", dataFileFullName, "\n")
 
 
 
-data = np.empty((0, 4))  # Left column is time of recording (since beginning), right column is the input value
-startTime = time.time()
+    data = np.empty((0, 4))  # Left column is time of recording (since beginning), right column is the input value
+    startTime = time.time()
 
-print("Starting data collection...")
-for i in range(1000):
-    x, y, z = getSensorData()
-    inputData = np.array([time.time()-startTime, x, y, z])
-    data = np.r_[data, [inputData]]
-    if i % 100 == 0:
-        if i != 0:
-            print("Recorded " + str(i) + " entries so far")
+    print("Starting data collection...")
+    for i in range(250):
+        x, y, z = getSensorData()
+        inputData = np.array([time.time()-startTime, x, y, z])
+        data = np.r_[data, [inputData]]
+        if i % 100 == 0:
+            if i != 0:
+                print("Recorded " + str(i) + " entries so far")
 
-np.savetxt(dataFileFullName, data)
+    np.savetxt(dataFileFullName, data)
 
-print(data)
-print("\nRecorded a total of", data.shape[0], "entries")
+    print(data)
+    print("\nRecorded a total of", data.shape[0], "entries")
 
 
 
