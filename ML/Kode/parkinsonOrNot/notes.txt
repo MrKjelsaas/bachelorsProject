@@ -1,6 +1,0 @@
-- Using swing time as a parameter
-  Swing time defined as any measurement where total force on any foot is equal to 0
-
-- Using coefficient of variation
-
-- We should definitely add some personals like age and height and weight
