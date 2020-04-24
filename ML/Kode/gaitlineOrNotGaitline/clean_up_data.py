@@ -2,8 +2,8 @@
 import numpy as np
 import os
 
-with_shoes_directory = r"C:\Users\magnu\OneDrive\Skole\Bacheloroppgaven\ML\Kode\gaitlineOrNotGaitline\data\with_shoes"
-without_shoes_directory = r"C:\Users\magnu\OneDrive\Skole\Bacheloroppgaven\ML\Kode\gaitlineOrNotGaitline\data\without_shoes"
+with_shoes_directory = r"data\with_shoes"
+without_shoes_directory = r"data\without_shoes"
 
 m = len(os.listdir(with_shoes_directory)) + len(os.listdir(without_shoes_directory))
 
@@ -55,5 +55,5 @@ np.random.shuffle(data)
 training_data = data[:int(np.size(data, 0)*0.8), :]
 test_data = data[int(np.size(data, 0)*0.8):, :]
 
-np.savetxt(r"C:\Users\magnu\OneDrive\Skole\Bacheloroppgaven\ML\Kode\gaitlineOrNotGaitline\data\training_data.dat", training_data)
-np.savetxt(r"C:\Users\magnu\OneDrive\Skole\Bacheloroppgaven\ML\Kode\gaitlineOrNotGaitline\data\test_data.dat", test_data)
+np.savetxt(r"data\training_data.dat", training_data)
+np.savetxt(r"data\test_data.dat", test_data)
