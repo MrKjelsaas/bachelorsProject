@@ -28,51 +28,12 @@
 */
 
 /* Set the delay between fresh samples */
-<<<<<<< HEAD
-#define BNO055_SAMPLERATE_DELAY_MS (50)
-=======
 #define BNO055_SAMPLERATE_DELAY_MS (100)
->>>>>>> 953334121235bc9002bcbbe5520cb7887962465f
 
 // Check I2C device address and correct line below (by default address is 0x29 or 0x28)
 //                                   id, address
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
 
-/**************************************************************************/
-/*
-    Displays some basic information on this sensor from the unified
-    sensor API sensor_t type (see Adafruit_Sensor for more information)
-*/
-/**************************************************************************/
-<<<<<<< HEAD
-void displaySensorDetails(void)
-{
-=======
-/*
-  void displaySensorDetails(void)
-  {
->>>>>>> 953334121235bc9002bcbbe5520cb7887962465f
-  sensor_t sensor;
-  bno.getSensor(&sensor);
-  Serial.println("------------------------------------");
-  Serial.print  ("Sensor:       "); Serial.println(sensor.name);
-  Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
-  Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
-  Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" xxx");
-  Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" xxx");
-  Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" xxx");
-  Serial.println("------------------------------------");
-  Serial.println("");
-  delay(500);
-<<<<<<< HEAD
-}
-
-/**************************************************************************/
-=======
-  }
-  /*
-  /**************************************************************************/
->>>>>>> 953334121235bc9002bcbbe5520cb7887962465f
 /*
     Arduino setup function (automatically called at startup)
 */
@@ -95,13 +56,8 @@ void setup(void)
   /* Use external crystal for better accuracy */
   bno.setExtCrystalUse(true);
 
-<<<<<<< HEAD
-  /* Display some basic information on this sensor */
-  displaySensorDetails();
-=======
   /* Display some basic information on this sensor
     displaySensorDetails();*/
->>>>>>> 953334121235bc9002bcbbe5520cb7887962465f
 }
 
 /**************************************************************************/
@@ -116,54 +72,24 @@ void loop(void)
   sensors_event_t event;
   bno.getEvent(&event);
 
-<<<<<<< HEAD
-  /* Board layout:
-         +----------+
-         |         *| RST   PITCH  ROLL  YAW
-     ADR |*        *| SCL
-     INT |*        *| SDA     ^            /->
-     PS1 |*        *| GND     |            |
-     PS0 |*        *| 3VO     Y    Z-->    \-X
-         |         *| VIN
-         +----------+
-  */
 
-  /* calibration data for each sensor. */
-  uint8_t sys, gyro, accel, mag = 0;
-  bno.getCalibration(&sys, &gyro, &accel, &mag);
-=======
-  /* The processing sketch expects data as roll, pitch, yaw */
+    /* The processing sketch expects data as roll, pitch, yaw */
   Serial.print(event.orientation.y, 4);
   Serial.print(",");
   Serial.print(event.orientation.z, 4);
   Serial.print(",");
   Serial.print(event.orientation.x, 4);
 
-  /*calibration data for each sensor. If the value is 0 = uncalibrated, if value is 3 = calibrated
-  The calibration data will not be printed in the raspicode file. You have to first calibrate with arduino in serial*/
+  /*calibration data for each sensor.*/
   uint8_t sys, gyro, accel, mag = 0;
   bno.getCalibration(&sys, &gyro, &accel, &mag);
   Serial.print(",");
->>>>>>> 953334121235bc9002bcbbe5520cb7887962465f
   Serial.print(sys, DEC);
   Serial.print(",");
   Serial.print(gyro, DEC);
   Serial.print(",");
   Serial.print(accel, DEC);
   Serial.print(",");
-<<<<<<< HEAD
-  Serial.print(mag, DEC);
-  Serial.print(",");
-  
-  /* The processing sketch expects data as roll, pitch, heading */
-  Serial.print(event.orientation.x, 4);
-  Serial.print(",");
-  Serial.print(event.orientation.y, 4);
-  Serial.print(",");
-  Serial.println(event.orientation.z, 4);
-
-=======
   Serial.println(mag, DEC);
->>>>>>> 953334121235bc9002bcbbe5520cb7887962465f
   delay(BNO055_SAMPLERATE_DELAY_MS);
 }
