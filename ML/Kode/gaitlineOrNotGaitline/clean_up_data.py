@@ -8,7 +8,7 @@ without_shoes_directory = r"data\without_shoes"
 m = len(os.listdir(with_shoes_directory)) + len(os.listdir(without_shoes_directory))
 
 # Enter the number of parameters here:
-n = 3
+n = 4
 data = np.zeros([m, n+1])
 
 files_iterated = 0
@@ -18,6 +18,7 @@ for filename in os.listdir(with_shoes_directory):
         data[files_iterated, 0] = np.std(dataFile[:, 1])
         data[files_iterated, 1] = np.std(dataFile[:, 2])
         data[files_iterated, 2] = np.mean(dataFile[:, 1])
+        data[files_iterated, 3] = np.std(dataFile[:, 3])
         data[files_iterated, n] = 1
         files_iterated += 1
 
@@ -27,6 +28,7 @@ for filename in os.listdir(without_shoes_directory):
         data[files_iterated, 0] = np.std(dataFile[:, 1])
         data[files_iterated, 1] = np.std(dataFile[:, 2])
         data[files_iterated, 2] = np.mean(dataFile[:, 1])
+        data[files_iterated, 3] = np.std(dataFile[:, 3])
         data[files_iterated, n] = 0
         files_iterated += 1
 
