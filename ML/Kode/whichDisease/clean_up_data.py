@@ -2,19 +2,31 @@
 import numpy as np
 import os
 
-with_shoes_directory = r"data\with_shoes"
-without_shoes_directory = r"data\without_shoes"
+with_socks_directory = r"data\with_socks"
+with_gaitline_shoes_directory = r"data\with_gaitline_shoes"
+with_green_shoes_directory = r"data\with_green_shoes"
 
-m = len(os.listdir(with_shoes_directory)) + len(os.listdir(without_shoes_directory))
+
+m = len(os.listdir(with_socks_directory)) + len(os.listdir(with_gaitline_shoes_directory)) + len(os.listdir(with_green_shoes_directory))
 
 # Enter the number of parameters here:
 n = 4
 data = np.zeros([m, n+1])
 
 files_iterated = 0
-for filename in os.listdir(with_shoes_directory):
+for filename in os.listdir(with_socks_directory):
     if filename.endswith(".dat"):
-        dataFile = np.loadtxt(os.path.join(with_shoes_directory, filename))
+        dataFile = np.loadtxt(os.path.join(with_socks_directory, filename))
+        data[files_iterated, 0] = np.std(dataFile[:, 1])
+        data[files_iterated, 1] = np.std(dataFile[:, 2])
+        data[files_iterated, 2] = np.mean(dataFile[:, 1])
+        data[files_iterated, 3] = np.std(dataFile[:, 3])
+        data[files_iterated, n] = 0
+        files_iterated += 1
+
+for filename in os.listdir(with_gaitline_shoes_directory):
+    if filename.endswith(".dat"):
+        dataFile = np.loadtxt(os.path.join(with_gaitline_shoes_directory, filename))
         data[files_iterated, 0] = np.std(dataFile[:, 1])
         data[files_iterated, 1] = np.std(dataFile[:, 2])
         data[files_iterated, 2] = np.mean(dataFile[:, 1])
@@ -22,15 +34,16 @@ for filename in os.listdir(with_shoes_directory):
         data[files_iterated, n] = 1
         files_iterated += 1
 
-for filename in os.listdir(without_shoes_directory):
+for filename in os.listdir(with_green_shoes_directory):
     if filename.endswith(".dat"):
-        dataFile = np.loadtxt(os.path.join(without_shoes_directory, filename))
+        dataFile = np.loadtxt(os.path.join(with_green_shoes_directory, filename))
         data[files_iterated, 0] = np.std(dataFile[:, 1])
         data[files_iterated, 1] = np.std(dataFile[:, 2])
         data[files_iterated, 2] = np.mean(dataFile[:, 1])
         data[files_iterated, 3] = np.std(dataFile[:, 3])
-        data[files_iterated, n] = 0
+        data[files_iterated, n] = 2
         files_iterated += 1
+
 
 # Remove any entry that is beyond 3 standard deviations from the mean
 mean = np.zeros(n-1)

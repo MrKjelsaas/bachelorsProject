@@ -21,13 +21,14 @@ except:
     time.sleep(3)
     exit()
 
+total_labels = 3
 thetas = np.ones(n+1)
 X = np.c_[np.ones([m, 1]), X]
 lambdaRegulator = 0.01
 print("Using lambda regulator", lambdaRegulator, "\n")
 
 
-thetas = ml.logReg.oneVsAll(X, y, 2, lambdaRegulator = lambdaRegulator, maxIterations = 1000)
+thetas = ml.logReg.oneVsAll(X, y, total_labels, lambdaRegulator = lambdaRegulator, maxIterations = 1000)
 
 predictions = ml.logReg.predictOneVsAll(thetas, X)
 
@@ -36,7 +37,7 @@ for i in range(np.size(y)):
     if predictions[i] == y[i]:
         sum += 1
 accuracy = 100*(sum/np.size(y))
-print("\nTraining data accuracy:  %.2f" % accuracy, "%", sep='')
+print("Training data accuracy:  %.2f" % accuracy, "%", sep='')
 
 
 try: # Load training data
@@ -45,8 +46,8 @@ try: # Load training data
     n = np.shape(test_data)[1] - 1
     X_test = np.zeros([m, n])
     y_test = np.zeros(m)
-    X = test_data[:, :n]
-    y = test_data[:, n]
+    X_test = test_data[:, :n]
+    y_test = test_data[:, n]
     print("\nSuccessfully loaded", m, "entries\n")
 except:
     print("Error loading data, now exiting...")
@@ -58,7 +59,7 @@ predictions = ml.logReg.predictOneVsAll(thetas, X_test)
 
 sum = 0
 for i in range(np.size(y_test)):
-    if predictions[i] == y[i]:
+    if predictions[i] == y_test[i]:
         sum += 1
 accuracy = 100*(sum/np.size(y_test))
-print("\nTest data accuracy:  %.2f" % accuracy, "%", sep='')
+print("Test data accuracy:  %.2f" % accuracy, "%\n", sep='')
