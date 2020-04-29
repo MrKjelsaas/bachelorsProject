@@ -6,8 +6,9 @@ import scipy.optimize as sp
 import time
 
 lambdaRegulator = 0.01
-hidden_layer_size = 50
-number_of_labels = 2
+hidden_layer_size = 10
+number_of_labels = 3
+iterations = 100
 
 try: # Load training data
     training_data = np.loadtxt(r"data\training_data.dat")
@@ -23,8 +24,32 @@ except:
     time.sleep(3)
     exit()
 
-X = np.c_[np.ones([m, 1]), X]
 weights1 = ml.neuralNetwork.randInitializeWeights(n, hidden_layer_size)
 weights2 = ml.neuralNetwork.randInitializeWeights(hidden_layer_size, number_of_labels)
+nn_parameters = np.zeros(np.size(weights1) + np.size(weights2))
+nn_parameters[:np.size(weights1)] = weights1.flatten()
+nn_parameters[np.size(weights1):] = weights2.flatten()
 
-prediction = ml.neuralNetwork.predict(weights1, weights2, X)
+print("Training...")
+args = (n, hidden_layer_size, X, y, number_of_labels, lambdaRegulator)
+nn_parameters = sp.minimize(ml.neuralNetwork.cost, nn_parameters, args=args, method='Nelder-Mead')['x']
+
+try: # Load test data
+    test_data = np.loadtxt(r"data\test_data.dat")
+    m = np.shape(test_data)[0]
+    n = np.shape(test_data)[1] - 1
+    X = np.zeros([m, n])
+    y = np.zeros(m)
+    X = test_data[:, :n]
+    y = test_data[:, n]
+    print("\nSuccessfully loaded", m, "entries\n")
+except:
+    print("Error loading data, now exiting...")
+    time.sleep(3)
+    exit()
+
+hypothesis = ml.neuralNetwork.hypothesis(nn_parameters, n, hidden_layer_size, X, number_of_labels)
+prediction = ml.neuralNetwork.predict(nn_parameters, n, hidden_layer_size, X, number_of_labels)
+print(hypothesis)
+print(prediction)
+print(y)

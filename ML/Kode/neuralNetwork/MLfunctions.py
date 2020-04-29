@@ -1,12 +1,12 @@
 import numpy as np
 import scipy.optimize as sp
 
+def sigmoid(x):
+    return 1/ (1 + (np.exp(-x)) )
+
 class logReg:
     def hypothesis(theta, X):
         return np.dot(theta, X)
-
-    def sigmoid(x):
-        return 1/ (1 + (np.exp(-x)) )
 
     def cost(theta, X, y, lambdaRegulator = 0):
         m = np.ma.size(y, 0)
@@ -41,7 +41,6 @@ class logReg:
         return h
 
     def oneVsAll(X, y, number_of_labels, lambdaRegulator = 0):
-        m = np.size(X, 0)
         n = np.size(X, 1)
         all_thetas = np.zeros([number_of_labels, n])
         initial_theta = np.zeros([n, 1])
@@ -52,7 +51,6 @@ class logReg:
                 if y[i] == c:
                     y_temp[i] = 1
             all_thetas[c, :] = sp.fmin_cg(logReg.cost, initial_theta, fprime=logReg.gradient, args=(X, y_temp, lambdaRegulator), maxiter = 1000, disp=0)
-
         return all_thetas
 
     def predictOneVsAll(all_thetas, X):
@@ -62,28 +60,40 @@ class logReg:
         predictions = logReg.sigmoid(logReg.hypothesis(all_thetas, X.T)).T
         for i in range(m):
             prediction[i] = np.argmax(predictions[i, :])
-
         return prediction
 
 class neuralNetwork:
     def sigmoid_derivative(z):
-        g = np.zeros(z.shape)
-        g = logReg.sigmoid(z) * (1-logReg.sigmoid(z))
-        return g
+        return sigmoid(z) * (1-sigmoid(z))
 
-    def predict(Theta1, Theta2, X):
+    def hypothesis(nn_parameters, input_layer_size, hidden_layer_size, X, number_of_labels):
+        Theta1 = nn_parameters[:hidden_layer_size * (input_layer_size + 1)].reshape(hidden_layer_size, input_layer_size+1)
+        Theta2 = nn_parameters[hidden_layer_size * (input_layer_size + 1):].reshape(number_of_labels, hidden_layer_size+1)
         m = np.size(X, 0)
-        prediction = np.zeros([m, 1])
+        X = np.c_[np.ones([m, 1]), X]
 
         z2 = np.dot(Theta1, X.T)
-        a2 = neuralNetwork.ReLU(z2).T
+        a2 = sigmoid(z2).T
         a2 = np.c_[np.ones([np.size(a2, 0), 1]), a2]
         z3 = np.dot(Theta2, a2.T)
-        a3 = neuralNetwork.ReLU(z3).T
+        a3 = sigmoid(z3).T
+        return a3
+
+    def predict(nn_parameters, input_layer_size, hidden_layer_size, X, number_of_labels):
+        m = np.size(X, 0)
+        X = np.c_[np.ones([m, 1]), X]
+        prediction = np.zeros([m, 1])
+        Theta1 = nn_parameters[:hidden_layer_size * (input_layer_size + 1)].reshape(hidden_layer_size, input_layer_size+1)
+        Theta2 = nn_parameters[hidden_layer_size * (input_layer_size + 1):].reshape(number_of_labels, hidden_layer_size+1)
+
+        z2 = np.dot(Theta1, X.T)
+        a2 = sigmoid(z2).T
+        a2 = np.c_[np.ones([np.size(a2, 0), 1]), a2]
+        z3 = np.dot(Theta2, a2.T)
+        a3 = sigmoid(z3).T
 
         for i in range(m):
             prediction[i] = np.argmax(a3[i, :])
-
         return prediction
 
     def randInitializeWeights(length_in, length_out, epsilon_init = 0.12):
@@ -91,8 +101,72 @@ class neuralNetwork:
         weights = np.random.rand(length_out, length_in + 1) * 2 * epsilon_init - epsilon_init
         return weights
 
-    def cost():
-        pass
+    def cost(nn_parameters, input_layer_size, hidden_layer_size, X, y, number_of_labels, lambdaRegulator = 0):
+        Theta1 = nn_parameters[:hidden_layer_size * (input_layer_size + 1)].reshape(hidden_layer_size, input_layer_size+1)
+        Theta2 = nn_parameters[hidden_layer_size * (input_layer_size + 1):].reshape(number_of_labels, hidden_layer_size+1)
 
-    def ReLU(x):
+        m = np.size(X, 0)
+        X = np.c_[np.ones([m, 1]), X]
+        I = np.eye(number_of_labels)
+        Y = np.zeros([m, number_of_labels])
+        for i in range(m):
+            Y[i, :] =  I[int(y[i]), :]
+
+        z2 = np.dot(Theta1, X.T)
+        a2 = sigmoid(z2).T
+        a2 = np.c_[np.ones([np.size(a2, 0), 1]), a2]
+        z3 = np.dot(Theta2, a2.T)
+        h = sigmoid(z3).T
+
+        J = -Y * np.log(h) - (1-Y) * np.log(1-h)
+        J = (1/m) * np.sum(J)
+        regulationTerm = np.sum(Theta1[:, 1:]**2) + np.sum(Theta2[:, 1:]**2)
+        regulationTerm *= (lambdaRegulator/(2*m))
+        J = J + regulationTerm
+        return J
+
+    def gradient(nn_parameters, input_layer_size, hidden_layer_size, X, y, number_of_labels, lambdaRegulator = 0):
+        Theta1 = nn_parameters[:hidden_layer_size * (input_layer_size + 1)].reshape(hidden_layer_size, input_layer_size+1)
+        Theta2 = nn_parameters[hidden_layer_size * (input_layer_size + 1):].reshape(number_of_labels, hidden_layer_size+1)
+
+        m = np.size(X, 0)
+        X = np.c_[np.ones([m, 1]), X]
+        I = np.eye(number_of_labels)
+        Y = np.zeros([m, number_of_labels])
+        for i in range(m):
+            Y[i, :] =  I[int(y[i]), :]
+
+        z2 = np.dot(Theta1, X.T)
+        a2 = sigmoid(z2).T
+        a2 = np.c_[np.ones([np.size(a2, 0), 1]), a2]
+        z3 = np.dot(Theta2, a2.T)
+        h = sigmoid(z3).T
+
+        sigma3 = h - Y
+        z2 = z2.T
+        z2 = np.c_[np.ones([np.size(z2, 0), 1]), z2]
+        sigma2 = np.dot(sigma3, Theta2) * neuralNetwork.sigmoid_derivative(z2)
+        sigma2 = sigma2[:, 1:]
+
+        delta1 = np.dot(sigma2.T, X)
+        delta2 = np.dot(sigma3.T, a2)
+
+        Theta1[:, 0] = 0
+        Theta2[:, 0] = 0
+
+        Theta1_gradient = (1/m)*delta1.T + (lambdaRegulator/m)*Theta1.T
+        Theta2_gradient = (1/m)*delta2.T + (lambdaRegulator/m)*Theta2.T
+
+        gradient = np.zeros(np.size(Theta1_gradient) + np.size(Theta2_gradient))
+        gradient[:np.size(Theta1_gradient)] = Theta1_gradient.flatten()
+        gradient[np.size(Theta1_gradient):] = Theta2_gradient.flatten()
+
+        return gradient
+
+    def ReLU(x): # Rectified linear unit
         return np.maximum(0, x)
+
+    def ReLu_derivative(x):
+        x[x<=0] = 0
+        x[x>0] = 1
+        return x
