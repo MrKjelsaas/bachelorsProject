@@ -2,6 +2,12 @@
 import numpy as np
 import os
 
+def sum_of_rotations(array):
+    sum = 0
+    for i in range(1, np.size(array)):
+        sum += np.abs(array[i] - array[i-1])
+    return sum
+
 with_socks_directory = r"data\with_socks"
 with_gaitline_shoes_directory = r"data\with_gaitline_shoes"
 with_green_shoes_directory = r"data\with_green_shoes"
@@ -10,7 +16,7 @@ with_green_shoes_directory = r"data\with_green_shoes"
 m = len(os.listdir(with_socks_directory)) + len(os.listdir(with_gaitline_shoes_directory)) + len(os.listdir(with_green_shoes_directory))
 
 # Enter the number of parameters here:
-n = 4
+n = 9
 data = np.zeros([m, n+1])
 
 files_iterated = 0
@@ -19,8 +25,13 @@ for filename in os.listdir(with_socks_directory):
         dataFile = np.loadtxt(os.path.join(with_socks_directory, filename))
         data[files_iterated, 0] = np.std(dataFile[:, 1])
         data[files_iterated, 1] = np.std(dataFile[:, 2])
-        data[files_iterated, 2] = np.mean(dataFile[:, 1])
-        data[files_iterated, 3] = np.std(dataFile[:, 3])
+        data[files_iterated, 2] = np.std(dataFile[:, 3])
+        data[files_iterated, 3] = np.mean(dataFile[:, 1])
+        data[files_iterated, 4] = np.mean(dataFile[:, 2])
+        data[files_iterated, 5] = np.mean(dataFile[:, 3])
+        data[files_iterated, 6] = sum_of_rotations(dataFile[:, 1])
+        data[files_iterated, 7] = sum_of_rotations(dataFile[:, 2])
+        data[files_iterated, 8] = sum_of_rotations(dataFile[:, 3])
         data[files_iterated, n] = 0
         files_iterated += 1
 
@@ -29,8 +40,13 @@ for filename in os.listdir(with_gaitline_shoes_directory):
         dataFile = np.loadtxt(os.path.join(with_gaitline_shoes_directory, filename))
         data[files_iterated, 0] = np.std(dataFile[:, 1])
         data[files_iterated, 1] = np.std(dataFile[:, 2])
-        data[files_iterated, 2] = np.mean(dataFile[:, 1])
-        data[files_iterated, 3] = np.std(dataFile[:, 3])
+        data[files_iterated, 2] = np.std(dataFile[:, 3])
+        data[files_iterated, 3] = np.mean(dataFile[:, 1])
+        data[files_iterated, 4] = np.mean(dataFile[:, 2])
+        data[files_iterated, 5] = np.mean(dataFile[:, 3])
+        data[files_iterated, 6] = sum_of_rotations(dataFile[:, 1])
+        data[files_iterated, 7] = sum_of_rotations(dataFile[:, 2])
+        data[files_iterated, 8] = sum_of_rotations(dataFile[:, 3])
         data[files_iterated, n] = 1
         files_iterated += 1
 
@@ -39,8 +55,13 @@ for filename in os.listdir(with_green_shoes_directory):
         dataFile = np.loadtxt(os.path.join(with_green_shoes_directory, filename))
         data[files_iterated, 0] = np.std(dataFile[:, 1])
         data[files_iterated, 1] = np.std(dataFile[:, 2])
-        data[files_iterated, 2] = np.mean(dataFile[:, 1])
-        data[files_iterated, 3] = np.std(dataFile[:, 3])
+        data[files_iterated, 2] = np.std(dataFile[:, 3])
+        data[files_iterated, 3] = np.mean(dataFile[:, 1])
+        data[files_iterated, 4] = np.mean(dataFile[:, 2])
+        data[files_iterated, 5] = np.mean(dataFile[:, 3])
+        data[files_iterated, 6] = sum_of_rotations(dataFile[:, 1])
+        data[files_iterated, 7] = sum_of_rotations(dataFile[:, 2])
+        data[files_iterated, 8] = sum_of_rotations(dataFile[:, 3])
         data[files_iterated, n] = 2
         files_iterated += 1
 
@@ -67,8 +88,10 @@ for i in range(n):
     # Every data input is now a number between 0 and 1
 
 np.random.shuffle(data)
-training_data = data[:int(np.size(data, 0)*0.8), :]
-test_data = data[int(np.size(data, 0)*0.8):, :]
+training_data = data
+test_data = data
+#training_data = data[:int(np.size(data, 0)*0.8), :]
+#test_data = data[int(np.size(data, 0)*0.8):, :]
 
 np.savetxt(r"data\training_data.dat", training_data)
 np.savetxt(r"data\test_data.dat", test_data)
