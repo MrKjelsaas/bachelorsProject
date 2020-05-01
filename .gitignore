@@ -1,5 +1,2 @@
-**rasbpicode\SavedData
-**rasbpicode\__pycache__
-**rasbpicode\serialReader.py
-**IMU\
-**Målinger\
+IMU/
+Målinger/
