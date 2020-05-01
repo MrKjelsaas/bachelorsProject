@@ -28,9 +28,9 @@ def getSensorData():
     yaw = float(string[2])
     return roll, pitch, yaw
 
-ser = serial.Serial(port='COM3', baudrate=9600)
+ser = serial.Serial(port='COM3', baudrate=115200)
 time.sleep(2)
-for times in range(10):
+for times in range(50):
     print("Starting recording", times+1)
     time.sleep(1)
 
@@ -46,7 +46,7 @@ for times in range(10):
     startTime = time.time()
 
     print("Starting data collection...")
-    for i in range(250):
+    for i in range(50):
         x, y, z = getSensorData()
         inputData = np.array([time.time()-startTime, x, y, z])
         data = np.r_[data, [inputData]]

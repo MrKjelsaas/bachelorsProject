@@ -40,7 +40,7 @@ class logReg:
                 h[i] = 0
         return h
 
-    def oneVsAll(X, y, number_of_labels, lambdaRegulator = 0):
+    def oneVsAll(X, y, number_of_labels, lambdaRegulator = 0, max_iterations = 100):
         m = np.size(X, 0)
         n = np.size(X, 1)
         all_thetas = np.zeros([number_of_labels, n])
@@ -51,7 +51,7 @@ class logReg:
             for i in range(np.size(y_temp, 0)):
                 if y[i] == c:
                     y_temp[i] = 1
-            all_thetas[c, :] = sp.fmin_cg(logReg.cost, initial_theta, fprime=logReg.gradient, args=(X, y_temp, lambdaRegulator), maxiter = 1000, disp=0)
+            all_thetas[c, :] = sp.fmin_cg(logReg.cost, initial_theta, fprime=logReg.gradient, args=(X, y_temp, lambdaRegulator), maxiter = max_iterations, disp=0)
 
         return all_thetas
 

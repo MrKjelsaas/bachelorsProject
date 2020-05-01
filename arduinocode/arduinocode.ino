@@ -1,60 +1,119 @@
-/*  
-  Arduino LSM9DS1 - Simple Accelerometer  
-  This example reads the acceleration values from the LSM9DS1 
-  sensor and continuously prints them to the Serial Monitor 
-  or Serial Plotter.  
-  The circuit:  
-  - Arduino Nano 33 BLE Sense 
-  created 10 Jul 2019 
-  by Riccardo Rizzo 
-  This example code is in the public domain.  
-*/  
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
 
-#include <Arduino_LSM9DS1.h>  
-#include <MadgwickAHRS.h> 
+/* This driver uses the Adafruit unified sensor library (Adafruit_Sensor),
+   which provides a common 'type' for sensor data and some helper functions.
 
-Madgwick filter;  
-const float sensorRate = 104.00;  
+   To use this driver you will also need to download the Adafruit_Sensor
+   library and include it in your libraries folder.
 
-void setup() {  
-  Serial.begin(9600); 
-  while (!Serial);  
-  Serial.println("Started");  
+   You should also assign a unique ID to this sensor for use with
+   the Adafruit Sensor API so that you can identify this particular
+   sensor in any data logs, etc.  To assign a unique ID, simply
+   provide an appropriate value in the constructor below (12345
+   is used by default in this example).
 
-  if (!IMU.begin()) { 
-    Serial.println("Failed to initialize IMU!");  
-    while (1);  
-  } 
+   Connections
+   ===========
+   Connect SCL to analog 5
+   Connect SDA to analog 4
+   Connect VDD to 3.3-5V DC
+   Connect GROUND to common ground
 
-  filter.begin(sensorRate); 
+   History
+   =======
+   2015/MAR/03  - First release (KTOWN)
+*/
+
+/* Set the delay between fresh samples */
+#define BNO055_SAMPLERATE_DELAY_MS (100)
+
+// Check I2C device address and correct line below (by default address is 0x29 or 0x28)
+//                                   id, address
+Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
+
+/**************************************************************************/
+/*
+    Displays some basic information on this sensor from the unified
+    sensor API sensor_t type (see Adafruit_Sensor for more information)
+*/
+/**************************************************************************/
+/*
+  void displaySensorDetails(void)
+  {
+  sensor_t sensor;
+  bno.getSensor(&sensor);
+  Serial.println("------------------------------------");
+  Serial.print  ("Sensor:       "); Serial.println(sensor.name);
+  Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
+  Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
+  Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" xxx");
+  Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" xxx");
+  Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" xxx");
+  Serial.println("------------------------------------");
+  Serial.println("");
+  delay(500);
+  }
+  /*
+  /**************************************************************************/
+/*
+    Arduino setup function (automatically called at startup)
+*/
+/**************************************************************************/
+void setup(void)
+{
+  Serial.begin(115200);
+  Serial.println("Orientation Sensor Test"); Serial.println("");
+
+  /* Initialise the sensor */
+  if (!bno.begin())
+  {
+    /* There was a problem detecting the BNO055 ... check your connections */
+    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+    while (1);
+  }
+
+  delay(1000);
+
+  /* Use external crystal for better accuracy */
+  bno.setExtCrystalUse(true);
+
+  /* Display some basic information on this sensor
+    displaySensorDetails();*/
+}
+
+/**************************************************************************/
+/*
+    Arduino loop function, called once 'setup' is complete (your own code
+    should go here)
+*/
+/**************************************************************************/
+void loop(void)
+{
+  /* Get a new sensor event */
+  sensors_event_t event;
+  bno.getEvent(&event);
 
 
-} 
+    /* The processing sketch expects data as roll, pitch, yaw */
+  Serial.print(event.orientation.y, 4);
+  Serial.print(",");
+  Serial.print(event.orientation.z, 4);
+  Serial.print(",");
+  Serial.print(event.orientation.x, 4);
 
-
-void loop() { 
-
-  float xAcc, yAcc, zAcc; 
-  float xGyro, yGyro, zGyro;  
-
-  float roll, pitch, yaw; 
-  // check if the IMU is ready to read: 
-  if (IMU.accelerationAvailable() &&  
-      IMU.gyroscopeAvailable()) { 
-    // read accelerometer & gyrometer:  
-    IMU.readAcceleration(xAcc, yAcc, zAcc); 
-    IMU.readGyroscope(xGyro, yGyro, zGyro); 
-
-    filter.updateIMU(xGyro, yGyro, zGyro, xAcc, yAcc, zAcc);  
-
-    roll = filter.getRoll();  
-    pitch = filter.getPitch();  
-    yaw = filter.getYaw();  
-    Serial.print(roll); 
-    Serial.print(",");  
-    Serial.print(pitch);  
-    Serial.print(",");  
-    Serial.println(yaw);  
-
-  } 
+  /*calibration data for each sensor.*/
+  uint8_t sys, gyro, accel, mag = 0;
+  bno.getCalibration(&sys, &gyro, &accel, &mag);
+  Serial.print(",");
+  Serial.print(sys, DEC);
+  Serial.print(",");
+  Serial.print(gyro, DEC);
+  Serial.print(",");
+  Serial.print(accel, DEC);
+  Serial.print(",");
+  Serial.println(mag, DEC);
+  delay(BNO055_SAMPLERATE_DELAY_MS);
 }
