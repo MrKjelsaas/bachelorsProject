@@ -5,11 +5,6 @@ import MLfunctions as ml
 import scipy.optimize as sp
 import time
 
-"""
-First:
-Load the data
-"""
-
 try: # Load training data
     training_data = np.loadtxt(r"data\training_data.dat")
     m = np.shape(training_data)[0]
@@ -24,7 +19,7 @@ except:
     time.sleep(3)
     exit()
 
-# initialize theta and add that 1-column to X
+# Initialize theta and add the 1-column to X
 theta = np.ones(n+1)
 X = np.c_[np.ones([m, 1]), X]
 lambdaRegulator = 0.01
@@ -46,19 +41,9 @@ if n == 2: # Plotting and visualizing the training data
     plt.ylabel("X1")
     plt.show()
 
-"""
-Time for fmin_cg
-This function is used to minimize the cost of our hypothesis using Newtons' Conjugate Gradient formula (look it up)
-"""
-
 print("Optimizing theta...")
 theta = sp.fmin_cg(ml.logReg.cost, theta, fprime=ml.logReg.gradient, args=(X, y, lambdaRegulator), maxiter = 100)
 print("\nOptimal theta: ", theta)
-
-"""
-Okay, we found our optimal theta, now to test it on our test data
-But first, visualize
-"""
 
 if n == 2: # Plotting and visualizing the decision boundary
     fig = plt.figure()
@@ -118,7 +103,5 @@ if n == 2: # Plotting and visualizing the data
     plt.ylabel("X1")
     plt.plot(x_plot, y_plot)
     plt.show()
-
-
 
 print("\n\nEnd of program")

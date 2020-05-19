@@ -6,9 +6,9 @@ import scipy.optimize as sp
 import time
 
 lambdaRegulator = 0.01
-hidden_layer_size = 10
-number_of_labels = 3
-iterations = 100
+hidden_layer_size = 4
+number_of_labels = 2
+iterations = 10000
 
 try: # Load training data
     training_data = np.loadtxt(r"data\training_data.dat")
@@ -32,7 +32,7 @@ nn_parameters[np.size(weights1):] = weights2.flatten()
 
 print("Training...")
 args = (n, hidden_layer_size, X, y, number_of_labels, lambdaRegulator)
-nn_parameters = sp.minimize(ml.neuralNetwork.cost, nn_parameters, args=args, method='Nelder-Mead')['x']
+nn_parameters = sp.minimize(ml.neuralNetwork.cost, nn_parameters, args=args, method='Nelder-Mead', options={'maxiter': iterations})['x']
 print("Training complete\n")
 
 hypothesis = ml.neuralNetwork.hypothesis(nn_parameters, n, hidden_layer_size, X, number_of_labels)

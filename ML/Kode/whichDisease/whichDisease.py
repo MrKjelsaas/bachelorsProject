@@ -26,10 +26,11 @@ total_labels = 3
 thetas = np.ones(n+1)
 X = np.c_[np.ones([m, 1]), X]
 lambdaRegulator = 0.01
+maxIterations = 10000
 print("Using lambda regulator", lambdaRegulator, "\n")
 
-
-thetas = ml.logReg.oneVsAll(X, y, total_labels, lambdaRegulator = lambdaRegulator, max_iterations = 1000)
+print("Training...")
+thetas = ml.logReg.oneVsAll(X, y, total_labels, lambdaRegulator = lambdaRegulator, maxIterations = maxIterations)
 
 predictions = ml.logReg.predictOneVsAll(thetas, X)
 
@@ -38,7 +39,7 @@ for i in range(np.size(y)):
     if predictions[i] == y[i]:
         sum += 1
 accuracy = 100*(sum/np.size(y))
-print("Training data accuracy:  %.2f" % accuracy, "%", sep='')
+print("Training data accuracy:  %.2f" % accuracy, "%\n", sep='')
 
 
 try: # Load test data
