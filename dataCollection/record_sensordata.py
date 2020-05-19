@@ -30,7 +30,8 @@ def getSensorData():
 
 ser = serial.Serial(port='COM3', baudrate=115200)
 time.sleep(2)
-for times in range(50):
+
+for times in range(50): # Input the number of logs you want here
     print("Starting recording", times+1)
     time.sleep(1)
 
@@ -42,7 +43,7 @@ for times in range(50):
 
 
 
-    data = np.empty((0, 4))  # Left column is time of recording (since beginning), right column is the input value
+    data = np.empty((0, 4)) # Left column is time of recording (since beginning), remaining columns are the inputs
     startTime = time.time()
 
     print("Starting data collection...")
@@ -52,20 +53,9 @@ for times in range(50):
         data = np.r_[data, [inputData]]
         if i % 100 == 0:
             if i != 0:
-                print("Recorded " + str(i) + " entries so far")
+                print("Recorded", i, "entries so far")
 
     np.savetxt(dataFileFullName, data)
 
     print(data)
     print("\nRecorded a total of", data.shape[0], "entries")
-
-
-
-
-
-
-
-# Start program
-# Give patient a few seconds to start walking
-# Record data for a certain time (30 seconds?)
-# Save data
